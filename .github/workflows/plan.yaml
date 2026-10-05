@@ -1,0 +1,25 @@
+# Repo infra: plan en PR (FR-018). No aplica nada.
+name: terraform-plan
+
+on:
+  pull_request:
+    paths:
+      - "**.tf"
+      - "modules/**"
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ">= 1.10"
+      - run: terraform fmt -check
+      - run: terraform init -backend=false
+      - run: terraform validate
+      - run: terraform plan -input=false -out=tfplan
+        env:
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          AWS_REGION: us-east-1

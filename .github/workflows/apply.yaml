@@ -1,0 +1,30 @@
+# Repo infra: apply solo en main (FR-018). Los repos de app nunca tocan Terraform.
+name: terraform-apply
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**.tf"
+      - "modules/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ">= 1.10"
+          terraform_wrapper: false
+      - run: terraform init -input=false
+      - run: terraform fmt -check && terraform validate
+      - run: terraform apply -input=false -auto-approve
