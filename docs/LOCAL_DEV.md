@@ -26,13 +26,21 @@ Prerrequisitos: Docker con Compose v2, Terraform >= 1.10, `uv` (Python 3.12),
    terraform plan && terraform apply -auto-approve
    aws --endpoint-url http://localhost:4566 eks list-clusters  # backend + frontend
    ```
-3. **Imágenes** (un shell por repo de app, contra el ECR de Floci):
+3. **Imágenes** (un shell por repo de app). El registry de Floci es HTTP y los
+   k3s resuelven el nombre ECR contra el path **sin prefijo** del registry
+   local (hallazgo 2026-10-05: el push con prefijo `<account>/<region>/` se
+   registra en la API ECR pero los pulls `ImagePullBackOff`; el path sin
+   prefijo sí resuelve):
    ```bash
    # ../cloud-project-backend
-   docker build -t 000000000000.dkr.ecr.us-east-1.localhost:4566/backend:local .
-   docker push 000000000000.dkr.ecr.us-east-1.localhost:4566/backend:local
+   docker build -t backend:local .
+   docker tag backend:local localhost:5100/backend:local
+   docker push localhost:5100/backend:local
    # ../cloud-project-frontend: igual con frontend:local
    ```
+   Los manifiestos `k8s/` referencian el nombre ECR
+   (`000000000000.dkr.ecr.us-east-1.localhost:4566/<repo>:local`); Floci lo
+   resuelve vía el mirror de containerd que inyecta en cada k3s.
 4. **Cargas**: `kubectl apply` de cada `k8s/` vía
    `docker exec floci-eks-<cluster> kubectl ...` (helper: `scripts/deploy.sh`
    local hasta que los workflows lo cubran).
