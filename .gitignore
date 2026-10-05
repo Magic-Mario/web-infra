@@ -1,0 +1,24 @@
+# Floci runtime data
+data/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfbackup
+*.tfvars
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Entorno y editores
+.env
+.env.*
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.tmp

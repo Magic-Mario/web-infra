@@ -1,0 +1,20 @@
+services:
+  floci:
+    image: floci/floci:latest
+    ports:
+      - "4566:4566"
+    volumes:
+      # Local directory bind mount (default)
+      - ./data:/app/data
+      # Requerido por EKS "real mode": Floci lanza un contenedor k3s por clúster
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # Red compartida por los contenedores k3s y Floci (nombre de la red del
+      # proyecto Compose: cloud-project_default).
+      FLOCI_SERVICES_EKS_DOCKER_NETWORK: cloud-project_default
+
+      # OR named volume (optional):
+      # - floci-data:/app/data
+
+#volumes:
+#  floci-data:

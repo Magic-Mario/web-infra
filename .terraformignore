@@ -1,0 +1,12 @@
+# Estado local y artefactos que no se suben con el config package
+.terraform/
+*.tfstate*
+*.tfbackup
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
