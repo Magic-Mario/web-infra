@@ -28,5 +28,3 @@ jobs:
       - run: terraform init -input=false
       - run: terraform fmt -check && terraform validate
       - run: terraform apply -input=false -auto-approve
-
-# touch apply
